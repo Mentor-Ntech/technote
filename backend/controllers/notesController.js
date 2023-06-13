@@ -1,24 +1,29 @@
-const Note = require("../models/Note");
 const User = require("../models/User");
+const Note = require("../models/Note");
 const asyncHandler = require("express-async-handler");
 
 // to get all the notes, we need to make get request, the route is gonna be /note and must be private
-const getAllNotes = asyncHandler(async (req, res) => {
+const getAllNotes = asyncHandler(async (req, res, next) => {
   const notes = await Note.find().lean();
-  if (!notes?.length)
-    return res.status(400).json({ message: "No notes found" });
+  if (!notes) return res.status(400).json({ message: "No notes found" });
 
   // Add username to each note before sending the response
   // We want to use Promise.all with map()
   // We could also do this with a for...of loop
 
-  const notesWithUser = await Promise.all(
-    notes.map(async (note) => {
-      const user = User.findById(note.user).lean().exec();
-      return { ...note, username: user.username };
-    })
-  );
-  res.status(200).json(notesWithUser);
+  try {
+    const notesWithUser = await Promise.all(
+      notes.map(async (note) => {
+        const user = await User.findById(note.user).lean().exec();
+        if (user && user.username) {
+          return { ...note, username: user.username };
+        } else return { ...note, username: "Unknown" };
+      })
+    );
+    res.status(200).json(notesWithUser);
+  } catch (err) {
+    res.status(500).json({ err: err }); // inertanal server error
+  }
 });
 
 // to create a new notes, we need to make post request, the route is gonna be /note and must be private
