@@ -11,6 +11,7 @@ import {
   NewUserForm,
   Prefetch,
 } from "./features/index";
+import PersistLogin from "./features/auth/PersistLogin";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
 
         {/* Protected Routes */}
         <Route element={<Prefetch />}>
+        <Route element={<PersistLogin />}>
           <Route path="/dash/" element={<DashLayout />}>
             <Route index element={<Welcome />} />
             <Route path="users">
@@ -36,6 +38,7 @@ function App() {
           </Route>
         </Route>
         {/* end of dash */}
+      </Route>
       </Route>
     </Routes>
   );
