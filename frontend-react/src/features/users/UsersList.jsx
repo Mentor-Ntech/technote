@@ -8,7 +8,7 @@ const UsersList = () => {
     isSuccess,
     isError,
     error,
-  } = useGetUsersQuery('usersList', {
+  } = useGetUsersQuery('UsersList', {
     pollingInterval: 60000, // requery the data every mins
     refetchOnFocus: true, // if we are in another window, the focus will still be on the browser window
     refetchOnMountOrArgChange: true, // normally if we remount a component, it will refetch the data
@@ -23,11 +23,9 @@ const UsersList = () => {
   }
 
   if (isSuccess) {
-    const { ids } = users;
+    const { ids } = users
 
-    const tableContent = ids?.length
-      ? ids.map((userId) => <User key={userId} userId={userId} />)
-      : null;
+    const tableContent = ids?.length && ids.map(userId => <User key={userId} userId={userId} />)
 
     content = (
       <table className="table table--users">
